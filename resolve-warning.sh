@@ -14,3 +14,9 @@ do
     echo "Processing $file"
     sed -i -e 's/header('\''Cache-Control: no-cache, must-revalidate'\'');/\/\/header('\''Cache-Control: no-cache, must-revalidate'\'');/g' "$file"
 done
+
+for file in ./teampass/sources/*.php
+do
+    echo "Processing $file"
+    sed -i -e 's/header('\''Cache-Control: no-cache, no-store, must-revalidate'\'');/\/\/header('\''Cache-Control: no-cache, no-store, must-revalidate'\'');/g' "$file"
+done
