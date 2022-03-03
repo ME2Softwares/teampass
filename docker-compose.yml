@@ -1,0 +1,53 @@
+version: "3.8"
+services:
+    teampass:
+        build:
+            args:
+                user: sammy
+                uid: 1000
+                repo: https://github.com/nilsteampassnet/TeamPass.git
+            context: .
+            dockerfile: Dockerfile
+        image: teampass
+        container_name: teampass
+        restart: unless-stopped
+        working_dir: /var/www/
+        environment:
+            - PHP_MAX_EXECUTION_TIME=60
+        volumes:
+            - ./teampass:/var/www
+            - ./docker-compose/nginx:/etc/nginx/conf.d/
+        networks:
+            - teampass-network
+
+    nginx:
+        image: nginx:alpine
+        container_name: teampass-nginx
+        restart: unless-stopped
+        ports:
+            - 8877:80
+        volumes:
+            - ./teampass:/var/www
+            - ./docker-compose/nginx:/etc/nginx/conf.d/
+        networks:
+            - teampass-network
+
+    mysql:
+        image: mysql:8.0
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        container_name: teampass-mysql
+        volumes:
+            - ./docker-compose/mysql:/var/lib/mysql
+        ports:
+            - 3311:3306
+        restart: always
+        networks:
+            - teampass-network
+
+networks:
+  teampass-network:
+      driver: bridge
